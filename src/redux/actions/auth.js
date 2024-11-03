@@ -1,10 +1,6 @@
+import auth from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {
-  LOGIN,
-  CREATEACCOUNT,
-  APPLOGOUT
-} from '../../utils/config';
-import {
-  apiPost,
   clearUserData,
   setUserData,
   setUserTempData,
@@ -14,6 +10,12 @@ import types from "../types";
 
 const { dispatch } = store;
 
+GoogleSignin.configure({
+  webClientId:
+    '260056904490-uil0ul4nb8p8anoq53i32fnmbuu8bcoh.apps.googleusercontent.com',
+  offlineAccess: true,
+});
+
 export const saveUserData = (data) => {
   dispatch({
     type: types.LOGIN,
@@ -21,53 +23,104 @@ export const saveUserData = (data) => {
   });
 };
 
-export function login(data) {
+export function login(email, password) {
   return new Promise((resolve, reject) => {
-    apiPost(LOGIN, data)
-      .then((res) => {
-        console.log(res);
-        setUserData(res)
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        const user = userCredential.user;
+        console.log(user);
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          // Include other user data as needed
+        };
+
+        setUserData(userData)
           .then(() => {
-            saveUserData(res);
-            resolve(res);
+            saveUserData(userData);
+            resolve(userData);
           })
-          .catch((error) => {
+          .catch(error => {
             reject(error);
           });
       })
-      .catch((error) => {
+      .catch(error => {
+        console.error('Login failed:', error);
         reject(error);
       });
   });
 }
 
-export function appLogOut(data) {
+export function signup(email, password) {
   return new Promise((resolve, reject) => {
-    apiPost(APPLOGOUT, data)
-      .then((res) => {
-        resolve(res);
+    auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        const user = userCredential.user;
+        console.log(user);
+        const tempUserData = {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          // Include other user data as needed
+        };
+
+        setUserTempData(tempUserData)
+          .then(() => {
+            resolve(tempUserData);
+          })
+          .catch(error => {
+            reject(error);
+          });
       })
-      .catch((error) => {
+      .catch(error => {
+        console.error('Signup failed:', error);
         reject(error);
       });
   });
 }
 
-export function signup(data) {
-  return new Promise((resolve, reject) => {
-    apiPost(CREATEACCOUNT, data)
-      .then((res) => {
-        setUserTempData(res)
-          .then(() => {
-            resolve(res);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      })
-      .catch((error) => {
-        reject(error);
+export function signInWithGoogle() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Start Google Sign-In process
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const {idToken} = userInfo;
+
+      // Create a Firebase credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+      // Sign in with Firebase using the Google credential
+      const userCredential = await auth().signInWithCredential(
+        googleCredential,
+      );
+      const user = userCredential.user;
+
+      console.log(user);
+
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        // Include other user data as needed
+      };
+
+      // Save user data locally
+      await setUserData(userData);
+      dispatch({
+        type: types.LOGIN,
+        payload: userData,
       });
+
+      resolve(userData);
+    } catch (error) {
+      console.error('Google Sign-In failed:', error);
+      reject(error);
+    }
   });
 }
 

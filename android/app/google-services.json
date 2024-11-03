@@ -12,7 +12,28 @@
           "package_name": "com.fpnews"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "260056904490-7lsfqmcpaqt9u9cm1b76p6glcsucjm6a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fpnews",
+            "certificate_hash": "f2d7ef7195766c482ccc828b2a1520680c0901ad"
+          }
+        },
+        {
+          "client_id": "260056904490-e20le1t1a1521lq74dkh3qfpk3tbn7mh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fpnews",
+            "certificate_hash": "f14dbd423a6f6a4a3e3ea36c394709312e48c24a"
+          }
+        },
+        {
+          "client_id": "260056904490-uil0ul4nb8p8anoq53i32fnmbuu8bcoh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD3G-5aOSwLNbm4FZvMSSzRhZZlZV4XPMM"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "260056904490-uil0ul4nb8p8anoq53i32fnmbuu8bcoh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "260056904490-43ri5mp79fgjk6lbn6qu70raduhkdjmo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.FPNews"
+              }
+            }
+          ]
         }
       }
     }

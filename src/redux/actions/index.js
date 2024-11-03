@@ -1,6 +1,4 @@
-import * as auth from './auth'
-import * as apicalls from './apicalls'
+import * as auth from './auth';
 export default {
     ...auth,
-    ...apicalls
-}
+},

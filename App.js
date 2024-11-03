@@ -5,11 +5,26 @@ import RootNavigation from './src/navigation/RootNavigation';
 import Provider  from "react-redux";
 import store from './src/redux/store';
 import CodePush from 'react-native-code-push';
+import { useEffect } from "react";
+import {getUserData} from './src/utils/utils';
+import {saveUserData} from './src/redux/actions/auth';
+
 const codePushOptions = {
   checkFrequesncy: CodePush.CheckFrequency.ON_APP_RESUME,
 };
 
 function App(): JSX.Element {
+
+  useEffect(() => {
+    (async () => {
+      const userData = await getUserData();
+      // console.log("User app data", userData);
+      if (!!userData) {
+        saveUserData(userData);
+      }
+    })();
+  }, []);
+
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{flex: 1}}>
