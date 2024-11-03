@@ -5,7 +5,6 @@ import {
 } from '../../utils/config';
 import {
   apiPost,
-  apiPut,
   clearUserData,
   setUserData,
   setUserTempData,
@@ -83,9 +82,5 @@ export function logout() {
         reject(error);
       });
   });
-}
-
-export function register(data) {
-  return apiPost(CREATEACCOUNT, data);
 }
 
