@@ -1,11 +1,13 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import routes from '../constants/routes';
-import { Text, Platform, Image} from 'react-native';
+import { Text, Platform } from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../screens/tab/Home';
 import Bookmark from '../screens/tab/Bookmark';
 import Profile from '../screens/tab/Profile';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const AppStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,22 +33,18 @@ const BottomTabNavigation = () => {
           paddingBottom: Platform.OS === 'ios' ? 35 : 10,
         },
       }}>
+        
       <Tab.Screen
         name="Home"
         component={Home}
         options={{
-          tabBarIcon: ({focused}) => {
-            return (
-              <Image
-                source={focused ? icons.homefilled : icons.home}
-                resizeMode="contain"
-                style={{
-                  height: 30,
-                  width: 30,
-                }}
-              />
-            );
-          },
+          tabBarIcon: ({focused}) => (
+            <Ionicons
+              name={focused ? 'home' : 'home-outline'}
+              size={30}
+              color={focused ? '#3D8361' : '#9C9C9C'}
+            />
+          ),
           tabBarLabel: ({focused}) => (
             <Text
               style={{color: focused ? '#3D8361' : '#9C9C9C'}}
@@ -58,21 +56,16 @@ const BottomTabNavigation = () => {
       />
 
       <Tab.Screen
-        name="Feed"
+        name="Bookmark"
         component={Bookmark}
         options={{
-          tabBarIcon: ({focused}) => {
-            return (
-              <Image
-                source={focused ? icons.feedsfilled : icons.feeds}
-                resizeMode="contain"
-                style={{
-                  height: 30,
-                  width: 30,
-                }}
-              />
-            );
-          },
+          tabBarIcon: ({focused}) => (
+            <FontAwesome
+              name={focused ? 'bookmark' : 'bookmark-o'}
+              size={30}
+              color={focused ? '#3D8361' : '#9C9C9C'}
+            />
+          ),
           tabBarLabel: ({focused}) => (
             <Text
               style={{color: focused ? '#3D8361' : '#9C9C9C'}}
@@ -87,18 +80,13 @@ const BottomTabNavigation = () => {
         name="Profile"
         component={Profile}
         options={{
-          tabBarIcon: ({focused}) => {
-            return (
-              <Image
-                source={focused ? icons.profilefilled : icons.profile}
-                resizeMode="contain"
-                style={{
-                  height: 30,
-                  width: 30,
-                }}
-              />
-            );
-          },
+          tabBarIcon: ({focused}) => (
+            <FontAwesome
+              name={focused ? 'user-circle' : 'user-circle-o'}
+              size={30}
+              color={focused ? '#3D8361' : '#9C9C9C'}
+            />
+          ),
           tabBarLabel: ({focused}) => (
             <Text
               style={{color: focused ? '#3D8361' : '#9C9C9C'}}

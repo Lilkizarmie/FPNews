@@ -4,9 +4,12 @@ import FlashMessage from "react-native-flash-message";
 import RootNavigation from './src/navigation/RootNavigation';
 import Provider  from "react-redux";
 import store from './src/redux/store';
+import CodePush from 'react-native-code-push';
+const codePushOptions = {
+  checkFrequesncy: CodePush.CheckFrequency.ON_APP_RESUME,
+};
 
-function App() {
-  
+function App(): JSX.Element {
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{flex: 1}}>
@@ -17,4 +20,4 @@ function App() {
   );
 };
 
-export default App;
+export default CodePush(codePushOptions)(App);
