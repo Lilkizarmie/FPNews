@@ -19,7 +19,7 @@ function App(): JSX.Element {
       const userData = await getUserData();
       console.log("User app data", userData);
       if (userData) {
-        store.dispatch(saveUserData(userData)); // Dispatching the action
+        store.dispatch(saveUserData(userData));
       }
     })();
   }, []);

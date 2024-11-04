@@ -23,57 +23,80 @@ export const saveUserData = (data) => {
   });
 };
 
-export function login(email, password) {
+export function login({email, password}) {
+   console.log(email, password);
   return new Promise((resolve, reject) => {
     auth()
       .signInWithEmailAndPassword(email, password)
-      .then(userCredential => {
+      .then(async userCredential => {
         const user = userCredential.user;
-        console.log(user);
-        const userData = {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          // Include other user data as needed
-        };
+        console.log('User logged in:', user);
 
-        setUserData(userData)
+        // Generate the Firebase token
+        try {
+          const idToken = await user.getIdToken(); // Get the ID token
+          console.log('ID Token:', idToken); // Log the ID token
+
+          const userData = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            token: idToken, 
+          };
+
+          setUserData(userData)
           .then(() => {
-            saveUserData(userData);
-            resolve(userData);
+            saveUserData(userData); // Save user data to Redux store
+            resolve(userData); // Resolve the promise with user data
           })
           .catch(error => {
-            reject(error);
+            reject(error); // Reject if there's an error in setUserData
           });
+        } catch (error) {
+          console.error('Failed to retrieve ID token:', error);
+          reject(error);
+        }
       })
       .catch(error => {
         console.error('Login failed:', error);
-        reject(error);
+        reject(error); // Reject the promise on login error
       });
   });
 }
 
-export function signup(email, password) {
+export function signup({email, password}) {
+  console.log(email, password);
   return new Promise((resolve, reject) => {
     auth()
       .createUserWithEmailAndPassword(email, password)
-      .then(userCredential => {
+      .then(async userCredential => {
         const user = userCredential.user;
-        console.log(user);
-        const tempUserData = {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          // Include other user data as needed
-        };
+        console.log('User created:', user);
 
-        setUserTempData(tempUserData)
-          .then(() => {
-            resolve(tempUserData);
-          })
-          .catch(error => {
-            reject(error);
-          });
+        // Generate the Firebase token
+        try {
+          const idToken = await user.getIdToken(); // Get the ID token
+          console.log('ID Token:', idToken); // Log the ID token
+
+          const newUserData = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            token: idToken, 
+          };
+
+          setUserTempData(newUserData)
+            .then(() => {
+              saveUserData(newUserData); // Save user data to Redux store
+              resolve(newUserData);
+            })
+            .catch(error => {
+              reject(error);
+            });
+        } catch (error) {
+          console.error('Failed to retrieve ID token:', error);
+          reject(error);
+        }
       })
       .catch(error => {
         console.error('Signup failed:', error);
@@ -82,46 +105,56 @@ export function signup(email, password) {
   });
 }
 
-export function signInWithGoogle() {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Start Google Sign-In process
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      const {idToken} = userInfo;
 
-      // Create a Firebase credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+export async function signInWithGoogle() {
+  try {
+    console.log('Checking if Google Play Services are available...');
+    await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+    await GoogleSignin.signOut().catch(error =>
+      console.log('Error signing out:', error),
+    );
 
-      // Sign in with Firebase using the Google credential
-      const userCredential = await auth().signInWithCredential(
-        googleCredential,
-      );
-      const user = userCredential.user;
+    console.log('Starting Google Sign-In process...');
+    const userInfo = await GoogleSignin.signIn();
 
-      console.log(user);
+    // Debug log to confirm idToken
+    console.log('ID Token:', userInfo.data.idToken);
 
-      const userData = {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        // Include other user data as needed
-      };
+    // Create a Firebase credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(
+      userInfo.data.idToken,
+    );
 
-      // Save user data locally
-      await setUserData(userData);
-      dispatch({
-        type: types.LOGIN,
-        payload: userData,
-      });
+    // Sign in with Firebase using the Google credential
+    console.log('Signing in with Firebase...');
+    const userCredential = await auth().signInWithCredential(googleCredential);
+    const user = userCredential.user;
+    console.log('Firebase sign-in successful:', user);
 
-      resolve(userData);
-    } catch (error) {
-      console.error('Google Sign-In failed:', error);
-      reject(error);
+    const userData = {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      token: userInfo.data.idToken,
+    };
+
+    // Save user data locally
+    await setUserData(userData);
+    dispatch({
+      type: types.LOGIN,
+      payload: userData,
+    });
+
+    console.log('User data saved successfully.');
+    return userData;
+  } catch (error) {
+    console.error('Google Sign-In failed:', error);
+    if (error.code) {
+      console.error(`Error code: ${error.code}`);
     }
-  });
+    throw error;
+  }
 }
 
 export function logout() {
