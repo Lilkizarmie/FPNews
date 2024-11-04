@@ -8,6 +8,7 @@ import {useSelector} from 'react-redux';
 const RootStack = createStackNavigator();
 
 const RootNavigation = () => {
+  
   const userData = useSelector(state => state.auth.userData);
 
   return (
