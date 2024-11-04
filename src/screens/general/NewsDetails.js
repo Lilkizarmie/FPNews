@@ -1,7 +1,9 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet, ScrollView, Button} from 'react-native';
+import {ScrollView, Image, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import { addBookmark, removeBookmark } from '../../redux/actions/auth';
+import {addBookmark, removeBookmark} from '../../redux/actions/auth';
+import NewsHeader from '../components/NewsHeader';
+import NewsContent from '../components/NewsContent';
 
 const NewsDetails = ({route}) => {
   const {news} = route.params;
@@ -21,16 +23,14 @@ const NewsDetails = ({route}) => {
   return (
     <ScrollView style={styles.container}>
       {news.media && <Image source={{uri: news.media}} style={styles.image} />}
-      <Text style={styles.title}>{news.title}</Text>
-      <Text style={styles.author}>By {news.author || 'Unknown'}</Text>
-      <Text style={styles.date}>
-        {new Date(news.published_date).toLocaleString()}
-      </Text>
-      <Text style={styles.summary}>{news.summary}</Text>
-      <Button
-        title={isBookmarked ? 'Remove Bookmark' : 'Bookmark'}
-        onPress={handleBookmark}
+      <NewsHeader
+        title={news.title}
+        author={news.author}
+        date={news.published_date}
+        isBookmarked={isBookmarked}
+        onBookmarkToggle={handleBookmark}
       />
+      <NewsContent summary={news.summary} />
     </ScrollView>
   );
 };
@@ -44,25 +44,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     borderRadius: 5,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  author: {
-    fontSize: 16,
-    color: 'gray',
-    marginBottom: 5,
-  },
-  date: {
-    fontSize: 14,
-    color: 'gray',
-    marginBottom: 15,
-  },
-  summary: {
-    fontSize: 16,
-    lineHeight: 24,
+    marginBottom: 10,
   },
 });
 

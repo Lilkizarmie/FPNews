@@ -1,13 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import axios from 'axios';
+import NewsList from '../../components/NewsList';
 import routes from '../../constants/routes';
 
 const Home = ({navigation}) => {
@@ -36,28 +30,16 @@ const Home = ({navigation}) => {
     fetchNews();
   }, []);
 
-  const renderItem = ({item}) => (
-    <TouchableOpacity
-      style={styles.newsItem}
-      onPress={() => navigation.navigate(routes.NEWSDETAILS, {news: item})}>
-      <Image source={{uri: item.media}} style={styles.image} />
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.date}>
-        {new Date(item.published_date).toLocaleDateString()}
-      </Text>
-    </TouchableOpacity>
-  );
+  const handlePressItem = item => {
+    navigation.navigate(routes.NEWSDETAILS, {news: item});
+  };
 
   return (
     <View style={styles.container}>
       {loading ? (
-        <Text>Loading...</Text>
+        <Text style={styles.loadingText}>Loading...</Text>
       ) : (
-        <FlatList
-          data={newsData}
-          renderItem={renderItem}
-          keyExtractor={item => item._id}
-        />
+        <NewsList newsData={newsData} onPressItem={handlePressItem} />
       )}
     </View>
   );
@@ -66,26 +48,12 @@ const Home = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    backgroundColor: '#f5f5f5',
   },
-  newsItem: {
-    marginBottom: 15,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 5,
-    padding: 10,
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    borderRadius: 5,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  date: {
-    fontSize: 14,
-    color: 'gray',
+  loadingText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
   },
 });
 
