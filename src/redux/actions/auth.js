@@ -23,6 +23,16 @@ export const saveUserData = (data) => {
   });
 };
 
+export const addBookmark = newsItem => ({
+  type: types.ADD_BOOKMARK,
+  payload: newsItem,
+});
+
+export const removeBookmark = newsItemId => ({
+  type: types.REMOVE_BOOKMARK,
+  payload: newsItemId,
+});
+
 export function login({email, password}) {
    console.log(email, password);
   return new Promise((resolve, reject) => {

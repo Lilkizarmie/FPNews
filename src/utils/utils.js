@@ -55,8 +55,6 @@ export async function apiReq(
         console.log(error && error.response, "the error respne");
         if (error && error.response && error.response.status === 401) {
           clearUserData();
-          // NavigationService.resetNavigation();
-          //NavigationService.navigate('loginUsingEmailScreen');
           dispatch({
             type: types.CLEAR_REDUX_STATE,
             payload: {},
