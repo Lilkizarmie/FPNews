@@ -1,8 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import axios from 'axios';
 import NewsList from '../../components/NewsList';
 import routes from '../../constants/routes';
+
+const TopBar = ({title}) => (
+  <View style={styles.topBar}>
+    <Text style={styles.topBarTitle}>{title}</Text>
+  </View>
+);
 
 const Home = ({navigation}) => {
   const [newsData, setNewsData] = useState([]);
@@ -12,13 +18,18 @@ const Home = ({navigation}) => {
     const fetchNews = async () => {
       try {
         const response = await axios.get(
-          'https://newscatcher-api.newscatcherapi.com/v2/latest_headlines',
+          'https://newsapi.org/v2/top-headlines',
           {
+            params: {
+              country: 'us',
+              category: 'general',
+            },
             headers: {
-              'x-api-key': 'YOUR_RAPIDAPI_KEY',
+              Authorization: 'b0703fb9c6434153a4ae73d4cfb64d39',
             },
           },
         );
+        console.log(response);
         setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
@@ -36,8 +47,9 @@ const Home = ({navigation}) => {
 
   return (
     <View style={styles.container}>
+      <TopBar title="Latest News" />
       {loading ? (
-        <Text style={styles.loadingText}>Loading...</Text>
+        <ActivityIndicator size="large" color="#6200EE" style={styles.loader} />
       ) : (
         <NewsList newsData={newsData} onPressItem={handlePressItem} />
       )}
@@ -50,10 +62,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  loadingText: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  topBar: {
+    height: 60,
+    backgroundColor: '#3D8361',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10,
+    elevation: 4,
+  },
+  topBarTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ffffff',
   },
 });
 

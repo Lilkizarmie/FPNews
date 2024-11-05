@@ -6,13 +6,13 @@ const NewsList = ({newsData, onPressItem}) => {
   return (
     <FlatList
       data={newsData}
-      keyExtractor={item => item.id.toString()}
+      keyExtractor={item => item.url}
       renderItem={({item}) => (
         <NewsItem
           title={item.title}
-          image={item.media || 'default_image_url'}
-          topic={item.topic}
-          publicationDate={item.published_date}
+          image={item.urlToImage || 'default_image_url'}
+          topic={item.source.name}
+          publicationDate={item.publishedAt}
           onPress={() => onPressItem(item)}
         />
       )}
